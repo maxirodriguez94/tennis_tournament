@@ -1,127 +1,55 @@
 <?php
-
 namespace App\Services;
 
-use App\Models\Match;
-use App\Models\Tournament;
 use App\Simulators\ManTournamentSimulator;
+use App\Simulators\WomanTournamentSimulator;
 
 class TournamentService
 {
-    private $matchResults = [];
-    private $round = 0;
-
-    public function simulateTournament($players, $isDoubles)
+    public function simulateTournament($players, $isDoubles, $gender)
     {
-        $tournament = Tournament::create([
-            'name' => 'Tournament ' . now()->format('Y-m-d H:i:s'),
-            'is_doubles' => $isDoubles,
-            'gender' => 'Masculino',
-        ]);
+        $tournamentSimulator = $this->getTournamentSimulator($gender, $players, $isDoubles);
 
-        $tournamentSimulator = new ManTournamentSimulator($players, $isDoubles, $this->round);
+        $teams = $tournamentSimulator->prepareTeams();
 
-        $winner = $tournamentSimulator->determineWinner(function ($teamA, $teamB) use ($tournament) {
-            $matchResult = $this->simulateMatch($teamA, $teamB);
+        $winner = null;
+        $matches = [];
 
-            Match::create([
-                'tournament_id' => $tournament->id,
-                'team_a' => implode(', ', $this->getPlayerNames($teamA)) ?? 'Desconocido',
-                'team_b' => implode(', ', $this->getPlayerNames($teamB)) ?? 'Desconocido',
-                'winner' => implode(', ', $this->getPlayerNames($matchResult['winner'])) ?? 'Desconocido',
-                'score_a' => $matchResult['score_a'] ?? 0,
-                'score_b' => $matchResult['score_b'] ?? 0,
-            ]);
-
-            return $matchResult['winner'];
-        });
-
-        $matches = Match::where('tournament_id', $tournament->id)->get();
-
-        if ($matches->isEmpty()) {
-            throw new \Exception("No se encontraron partidos para el torneo ID {$tournament->id}");
+        foreach ($teams as $teamA) {
+            foreach ($teams as $teamB) {
+                if ($teamA !== $teamB) {
+                    $matchResult = $tournamentSimulator->simulateMatch($teamA, $teamB, $isDoubles);
+                    $matches[] = $matchResult;
+                    $winner = $matchResult['winner'];
+                }
+            }
         }
 
-        $matchResults = $matches->map(function ($match) {
+        $matchResults = collect($matches)->map(function ($match) {
             return [
-                'id' => $match->id ?? null,
-                'tournament_id' => $match->tournament_id ?? null,
-                'team_a' => $match->team_a ?? 'Desconocido',
-                'team_b' => $match->team_b ?? 'Desconocido',
-                'winner' => $match->winner ?? 'Desconocido',
-                'score_a' => $match->score_a ?? 0,
-                'score_b' => $match->score_b ?? 0,
+                'id' => $match['id'],
+                'team_a' => $match['team_a'],
+                'team_b' => $match['team_b'],
+                'winner' => $match['winner'],
+                'score_a' => $match['score_a'],
+                'score_b' => $match['score_b'],
             ];
         });
 
         return [
-            'winner' => $this->getWinnerName($winner),
+            'winner' => $winner,
             'match_results' => $matchResults,
         ];
     }
 
-    protected function simulateMatch($teamA, $teamB)
+    private function getTournamentSimulator($gender, $players, $isDoubles)
     {
-
-        $scoreA = $this->calculateStrengthAndSpeed($teamA);
-        $scoreB = $this->calculateStrengthAndSpeed($teamB);
-
-        $winner = ($scoreA === $scoreB)
-            ? (rand(0, 1) === 0 ? $teamA : $teamB)
-            : ($scoreA > $scoreB ? $teamA : $teamB);
-
-        return [
-            'team_a' => $teamA,
-            'team_b' => $teamB,
-            'score_a' => $scoreA,
-            'score_b' => $scoreB,
-            'winner' => $winner,
-        ];
-    }
-
-    protected function getWinnerName($winner)
-    {
-        if (is_array($winner)) {
-            return implode(', ', $this->getPlayerNames($winner));
-        } elseif (is_object($winner)) {
-            return $winner->name ?? 'Desconocido';
+        if ($gender === 'Masculino') {
+            return new ManTournamentSimulator($players, $isDoubles, 1);
         }
 
-        return 'Desconocido';
-    }
-
-    protected function calculateStrengthAndSpeed($team)
-    {
-        if (!is_array($team)) {
-            return 0;
-        }
-
-        if (isset($team['strength']) && isset($team['speed'])) {
-            return intval($team['strength']) + intval($team['speed']);
-        }
-
-        return array_sum(array_map(function ($player) {
-            $strength = isset($player['strength']) ? intval($player['strength']) : 0;
-            $speed = isset($player['speed']) ? intval($player['speed']) : 0;
-            return $strength + $speed;
-        }, $team));
-    }
-
-    protected function getPlayerNames($team)
-    {
-        if (isset($team['name'])) {
-            return [$team['name']];
-        }
-
-        if (is_array($team) && array_keys($team) === range(0, count($team) - 1)) {
-            return array_map(function ($player) {
-                return $player['name'] ?? 'Desconocido';
-            }, $team);
-        }
-        if (is_object($team)) {
-            return [$team->name ?? 'Desconocido'];
-        }
-
-        return ['Desconocido'];
+        return new WomanTournamentSimulator($players, $isDoubles, 1);
     }
 }
+
+

@@ -5,40 +5,45 @@ namespace App\Simulators;
 
 class ManTournamentSimulator extends TournamentSimulator
 {
-    public function determineWinner(callable $simulateMatch)
+    protected function calculateTeamScore($team, $isDoubles)
     {
-        $teams = $this->prepareTeams(); 
-    
-        while (count($teams) > 1) {
-            $nextRound = [];
-    
-            for ($i = 0; $i < count($teams); $i += 2) {
-                if (!isset($teams[$i + 1])) {
-                    $nextRound[] = $teams[$i];
-                    continue;
-                }
-
-                $winner = $simulateMatch($teams[$i], $teams[$i + 1]);
-    
-                if (!$winner) {
-                    throw new \Exception("El simulador no pudo determinar un ganador.");
-                }
-    
-                $nextRound[] = $winner; 
-            }
-    
-            $this->advanceRound(); 
-            $teams = $nextRound; 
-        }
-    
-        return $teams[0] ?? null; 
+        return $this->calculateStrengthAndSpeed($team, $isDoubles);
     }
-    
 
-    
+    protected function calculateStrengthAndSpeed($team, $isDoubles)
+    {
+        if (empty($team)) {
+            return 0;
+        }
 
+        if ($isDoubles && is_array($team) && count($team) >= 2) {
+            $score = 0;
 
-    
-    
+            foreach ($team as $player) {
+                if (isset($player['strength'], $player['speed'])) {
+                    $score += intval($player['strength']) + intval($player['speed']);
+                }
+            }
+
+            return $score;
+        }
+
+        if (isset($team['strength'], $team['speed'])) {
+            return intval($team['strength']) + intval($team['speed']);
+        }
+
+        return 0;
+    }
+
+    public function prepareTeams()
+    {
+        return parent::prepareTeams();
+    }
+
+    public function simulateMatch($teamA, $teamB, $isDoubles)
+    {
+        return parent::simulateMatch($teamA, $teamB,$isDoubles);
+    }
 }
+
 
