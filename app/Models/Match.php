@@ -19,7 +19,7 @@ class Match extends Model
     ];
 
     protected $casts = [
-        'team_a' => 'array',
-        'team_b' => 'array',
+        'team_a' => 'array', 
+        'team_b' => 'array', 
     ];
 }

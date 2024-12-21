@@ -38,6 +38,8 @@ class TournamentSimulator
         return $playersArray; 
     }
 
+    
+
     protected function simulateMatch($teamA, $teamB, $isDoubles)
     {
         $scoreA = $this->calculateTeamScore($teamA,$isDoubles);

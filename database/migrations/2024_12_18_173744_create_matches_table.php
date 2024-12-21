@@ -14,18 +14,17 @@ class CreateMatchesTable extends Migration
     public function up()
     {
         Schema::create('matches', function (Blueprint $table) {
-            Schema::create('matches', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('tournament_id')->constrained('tournaments')->onDelete('cascade');
-                $table->json('team_a');
-                $table->json('team_b'); 
-                $table->string('winner'); 
-                $table->integer('score_a')->nullable(); 
-                $table->integer('score_b')->nullable(); 
-                $table->timestamps();
-            });
-        });
-    }
+            $table->id();
+            $table->foreignId('tournament_id')->constrained('tournaments')->onDelete('cascade'); // Relación con torneos
+            $table->json('team_a'); 
+            $table->json('team_b'); 
+            $table->string('winner'); 
+            $table->integer('score_a')->nullable(); 
+            $table->integer('score_b')->nullable(); 
+            $table->timestamps(); 
+    });
+}
+
 
     /**
      * Reverse the migrations.
