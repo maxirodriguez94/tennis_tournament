@@ -57,7 +57,7 @@ class TournamentController extends Controller
                     'winner' => $match['winner'] ?? 'Desconocido',
                     'score_a' => $match['score_a'] ?? 0,
                     'score_b' => $match['score_b'] ?? 0,
-                    'round_number' => 0,
+                    'round' => $match['round']
                 ];
             });
 

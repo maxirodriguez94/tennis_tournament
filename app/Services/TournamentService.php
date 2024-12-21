@@ -13,56 +13,73 @@ class TournamentService
         $tournamentSimulator = $this->getTournamentSimulator($gender, $players, $isDoubles);
     
         $teams = $tournamentSimulator->prepareTeams();
+        $totalTeams = count($teams);
+        $rounds = intval(log($totalTeams, 2)); 
     
-        $winner = null;
         $matches = [];
-        foreach ($teams as $teamA) {
-            foreach ($teams as $teamB) {
-                if ($teamA !== $teamB) {
-                    try {
-                        $matchResult = $tournamentSimulator->simulateMatch($teamA, $teamB, $isDoubles);
+        $currentRound = 1;
     
-                        $match = Match::create([
-                            'tournament_id' => $tournament->id,
-                            'team_a' => json_encode($teamA), 
-                            'team_b' => json_encode($teamB),
-                            'winner' => json_encode($matchResult['winner']), 
-                            'score_a' => $matchResult['score_a'],
-                            'score_b' => $matchResult['score_b'],
-                        ]);
+        while (count($teams) > 1) {
+            Log::info("Simulando ronda {$currentRound}");
     
-                        $matches[] = $match;
+            $nextRoundTeams = [];
+            for ($i = 0; $i < count($teams); $i += 2) {
+                $teamA = $teams[$i];
+                $teamB = $teams[$i + 1] ?? null;
     
-                        Log::info('Partido guardado exitosamente', [
-                            'match_id' => $match->id,
-                            'tournament_id' => $tournament->id,
-                            'team_a' => $teamA,
-                            'team_b' => $teamB,
-                            'winner' => $matchResult['winner'],
-                            'score_a' => $matchResult['score_a'],
-                            'score_b' => $matchResult['score_b'],
-                        ]);
+                if (!$teamB) {
+                    $nextRoundTeams[] = $teamA;
+                    continue;
+                }
     
-                        $winner = $matchResult['winner'];
-                    } catch (\Exception $e) {
-                        Log::error('Error al procesar el partido', [
-                            'team_a' => $teamA,
-                            'team_b' => $teamB,
-                            'exception' => $e->getMessage(),
-                        ]);
-                    }
+                try {
+                    $matchResult = $tournamentSimulator->simulateMatch($teamA, $teamB, $isDoubles);
+                    Log::info('Datos del partido antes de guardar', [
+                        'tournament_id' => $tournament->id,
+                        'team_a' => json_encode($teamA),
+                        'team_b' => json_encode($teamB),
+                        'winner' => json_encode($matchResult['winner']),
+                        'score_a' => $matchResult['score_a'],
+                        'score_b' => $matchResult['score_b'],
+                        'round' => $currentRound,
+                    ]);
+   
+                    $match = Match::create([
+                        'tournament_id' => $tournament->id,
+                        'team_a' => json_encode($teamA),
+                        'team_b' => json_encode($teamB),
+                        'winner' => json_encode($matchResult['winner']),
+                        'score_a' => $matchResult['score_a'],
+                        'score_b' => $matchResult['score_b'],
+                        'round' => $currentRound, 
+                    ]);
+    
+                    $matches[] = $match;
+                    $nextRoundTeams[] = $matchResult['winner'];
+                } catch (\Exception $e) {
+                    Log::error("Error al procesar el partido", [
+                        'team_a' => $teamA,
+                        'team_b' => $teamB,
+                        'exception' => $e->getMessage(),
+                    ]);
                 }
             }
-        }
     
+            $teams = $nextRoundTeams;
+            $currentRound++; 
+        }
+
+        $winner = $teams[0] ?? null;
+
         $matchResults = collect($matches)->map(function ($match) {
             return [
                 'id' => $match->id,
-                'team_a' => json_decode($match->team_a, true), 
-                'team_b' => json_decode($match->team_b, true), 
-                'winner' => json_decode($match->winner, true), 
+                'team_a' => json_decode($match->team_a, true),
+                'team_b' => json_decode($match->team_b, true),
+                'winner' => json_decode($match->winner, true),
                 'score_a' => $match->score_a,
                 'score_b' => $match->score_b,
+                'round' => $match->round,
             ];
         });
     
@@ -71,6 +88,8 @@ class TournamentService
             'match_results' => $matchResults,
         ];
     }
+    
+    
     
 
     private function getTournamentSimulator($gender, $players, $isDoubles)

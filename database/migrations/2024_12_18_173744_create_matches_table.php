@@ -19,8 +19,9 @@ class CreateMatchesTable extends Migration
             $table->json('team_a'); 
             $table->json('team_b'); 
             $table->string('winner'); 
-            $table->integer('score_a')->nullable(); 
-            $table->integer('score_b')->nullable(); 
+            $table->integer('score_a');
+            $table->integer('score_b'); 
+            $table->integer('round')->nullable(false); 
             $table->timestamps(); 
     });
 }

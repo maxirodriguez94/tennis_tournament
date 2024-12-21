@@ -16,6 +16,7 @@ class Match extends Model
         'winner',
         'score_a',
         'score_b',
+        'round',
     ];
 
     protected $casts = [
