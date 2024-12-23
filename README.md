@@ -1,65 +1,135 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Tennis Tournament
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este es un proyecto Laravel diseñado para simular torneos de tenis. Incluye jugadores predefinidos y permite realizar simulaciones de partidos.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Asegúrate de tener instalados los siguientes requisitos previos antes de comenzar:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- Git
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Instalación y configuración
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Sigue los pasos a continuación para configurar y ejecutar el proyecto:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Clonar el repositorio
 
-## Laravel Sponsors
+Clona el repositorio del proyecto desde GitHub:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+git clone git@github.com:maxirodriguez94/tennis_tournament.git
+cd tennis_tournament
+```
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### 2. Configurar el entorno
 
-## Contributing
+Copia el archivo de ejemplo `.env.example` y renómbralo como `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+Asegúrate de ajustar los valores si es necesario. Para este proyecto, SQLite ya está configurado por defecto.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+### 3. Construir y levantar los contenedores Docker
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Ejecuta los siguientes comandos para construir y levantar los contenedores de Docker:
 
-## License
+```bash
+sudo docker-compose build
+sudo docker-compose up -d --build
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# tennis_tournament
+Esto iniciará los servicios necesarios, incluyendo el servidor PHP.
+
+---
+
+### 4. Ejecutar migraciones y seeders
+
+Accede al contenedor principal y ejecuta las migraciones y seeders para configurar la base de datos:
+
+1. Accede al contenedor:
+   ```bash
+   docker exec -it tennis_app bash
+   ```
+
+2. Ejecuta las migraciones:
+   ```bash
+   php artisan migrate
+   ```
+
+3. Ejecuta los seeders:
+   ```bash
+   php artisan db:seed --class=PlayerSeeder
+   ```
+
+---
+
+### 5. Levantar el servidor de desarrollo
+
+Desde el contenedor, inicia el servidor de desarrollo Laravel:
+
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+Tu aplicación estará disponible en [http://localhost:8000](http://localhost:8000).
+
+---
+
+## Uso
+
+### API Endpoints
+
+1. **Simular torneo**:
+   - **Ruta:** `POST /api/tournaments/simulate`
+   - **Cuerpo (JSON):**
+     ```json
+     {
+       "gender": "Femenino",
+       "type": "doubles",
+       "players": 8
+     }
+     ```
+
+2. **Obtener torneos con partidos**:
+   - **Ruta:** `GET /api/tournaments/with-matches`
+   - **Parámetros opcionales:**
+     - `gender`
+     - `tournament_id`
+     - `startDate`
+     - `endDate`
+
+---
+
+## Comandos útiles
+
+- Apagar los contenedores:
+  ```bash
+  docker-compose down
+  ```
+
+- Reconstruir el entorno:
+  ```bash
+  docker-compose up --build -d
+  ```
+
+- Acceder al contenedor principal:
+  ```bash
+  docker exec -it tennis_app bash
+  ```
+
+---
+
+Contribución
+
+Si deseas contribuir al proyecto o tienes alguna duda, contacta al equipo de desarrollo.
+
