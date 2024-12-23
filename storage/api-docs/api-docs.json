@@ -1,0 +1,621 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentación de la API de Torneos",
+        "description": "Esta es la documentación de la API para la gestión de torneos.",
+        "contact": {
+            "email": "soporte@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/tournaments/simulate": {
+            "post": {
+                "tags": [
+                    "Tournaments"
+                ],
+                "summary": "Simular torneo",
+                "description": "Simula un torneo con los datos proporcionados.",
+                "operationId": "9c643a5142ca15d7206a21e1c642c8d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "gender": {
+                                        "description": "Género del torneo",
+                                        "type": "string",
+                                        "enum": [
+                                            "Masculino",
+                                            "Femenino"
+                                        ],
+                                        "example": "Femenino"
+                                    },
+                                    "type": {
+                                        "description": "Tipo de torneo (individual o dobles)",
+                                        "type": "string",
+                                        "enum": [
+                                            "single",
+                                            "doubles"
+                                        ],
+                                        "example": "doubles"
+                                    },
+                                    "players": {
+                                        "description": "Cantidad de jugadores participantes (mínimo 8)",
+                                        "type": "integer",
+                                        "example": 8
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Torneo simulado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "winner": {
+                                            "description": "Ganador del torneo",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 21
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Serena Williams"
+                                                    },
+                                                    "skill_level": {
+                                                        "type": "integer",
+                                                        "example": 97
+                                                    },
+                                                    "gender": {
+                                                        "type": "string",
+                                                        "example": "Femenino"
+                                                    },
+                                                    "strength": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "speed": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "reaction_time": {
+                                                        "type": "integer",
+                                                        "example": 95
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-12-23T21:33:39.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-12-23T21:33:39.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "match_results": {
+                                            "description": "Resultados de los partidos",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID del partido",
+                                                        "type": "integer",
+                                                        "example": 4
+                                                    },
+                                                    "team_a": {
+                                                        "description": "Equipo A",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 27
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Petra Kvitová"
+                                                                },
+                                                                "skill_level": {
+                                                                    "type": "integer",
+                                                                    "example": 89
+                                                                },
+                                                                "gender": {
+                                                                    "type": "string",
+                                                                    "example": "Femenino"
+                                                                },
+                                                                "strength": {
+                                                                    "type": "integer",
+                                                                    "example": 0
+                                                                },
+                                                                "speed": {
+                                                                    "type": "integer",
+                                                                    "example": 0
+                                                                },
+                                                                "reaction_time": {
+                                                                    "type": "integer",
+                                                                    "example": 86
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:39.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:39.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "team_b": {
+                                                        "description": "Equipo B",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 21
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Serena Williams"
+                                                                },
+                                                                "skill_level": {
+                                                                    "type": "integer",
+                                                                    "example": 97
+                                                                },
+                                                                "gender": {
+                                                                    "type": "string",
+                                                                    "example": "Femenino"
+                                                                },
+                                                                "strength": {
+                                                                    "type": "integer",
+                                                                    "example": 0
+                                                                },
+                                                                "speed": {
+                                                                    "type": "integer",
+                                                                    "example": 0
+                                                                },
+                                                                "reaction_time": {
+                                                                    "type": "integer",
+                                                                    "example": 95
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:39.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:39.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "winner": {
+                                                        "description": "Equipo ganador",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 21
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Serena Williams"
+                                                                },
+                                                                "skill_level": {
+                                                                    "type": "integer",
+                                                                    "example": 97
+                                                                },
+                                                                "gender": {
+                                                                    "type": "string",
+                                                                    "example": "Femenino"
+                                                                },
+                                                                "reaction_time": {
+                                                                    "type": "integer",
+                                                                    "example": 95
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "score_a": {
+                                                        "description": "Puntaje del Equipo A",
+                                                        "type": "integer",
+                                                        "example": 181
+                                                    },
+                                                    "score_b": {
+                                                        "description": "Puntaje del Equipo B",
+                                                        "type": "integer",
+                                                        "example": 190
+                                                    },
+                                                    "round": {
+                                                        "description": "Número de ronda",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos inválidos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Ocurrió un error al simular el torneo."
+                                        },
+                                        "details": {
+                                            "type": "string",
+                                            "example": "Error inesperado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tournaments/with-matches": {
+            "get": {
+                "tags": [
+                    "Tournaments"
+                ],
+                "summary": "Obtiene torneos con partidos asociados",
+                "description": "Devuelve una lista de torneos junto con los detalles de sus partidos según los criterios proporcionados. Si se incluye el ID del torneo, no se permiten otros parámetros de búsqueda.",
+                "operationId": "458f7a059011e50611f3ca0dba9c8c06",
+                "parameters": [
+                    {
+                        "name": "tournament_id",
+                        "in": "query",
+                        "description": "ID único del torneo. Si se proporciona, no se pueden incluir otros parámetros.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "123"
+                        }
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "description": "Género del torneo. Valores posibles: 'Masculino' o 'Femenino'.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Masculino",
+                                "Femenino"
+                            ],
+                            "example": "Masculino"
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "Fecha de inicio del rango de búsqueda en formato YYYY-MM-DD.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-01-01"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "Fecha de fin del rango de búsqueda en formato YYYY-MM-DD.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-12-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Torneos encontrados con éxito.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Torneos encontrados."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Tournament 2024-12-23 21:33:41"
+                                                    },
+                                                    "is_doubles": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "gender": {
+                                                        "type": "string",
+                                                        "example": "Femenino"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-12-23T21:33:41.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-12-23T21:33:41.000000Z"
+                                                    },
+                                                    "matches": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "tournament_id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "team_a": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 27
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "Petra Kvitová"
+                                                                            },
+                                                                            "skill_level": {
+                                                                                "type": "integer",
+                                                                                "example": 89
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "string",
+                                                                                "example": "Femenino"
+                                                                            },
+                                                                            "strength": {
+                                                                                "type": "integer",
+                                                                                "example": 0
+                                                                            },
+                                                                            "speed": {
+                                                                                "type": "integer",
+                                                                                "example": 0
+                                                                            },
+                                                                            "reaction_time": {
+                                                                                "type": "integer",
+                                                                                "example": 86
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "format": "date-time",
+                                                                                "example": "2024-12-23T21:33:39.000000Z"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "format": "date-time",
+                                                                                "example": "2024-12-23T21:33:39.000000Z"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "team_b": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 28
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "Victoria Azarenka"
+                                                                            },
+                                                                            "skill_level": {
+                                                                                "type": "integer",
+                                                                                "example": 91
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "string",
+                                                                                "example": "Femenino"
+                                                                            },
+                                                                            "strength": {
+                                                                                "type": "integer",
+                                                                                "example": 0
+                                                                            },
+                                                                            "speed": {
+                                                                                "type": "integer",
+                                                                                "example": 0
+                                                                            },
+                                                                            "reaction_time": {
+                                                                                "type": "integer",
+                                                                                "example": 88
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "format": "date-time",
+                                                                                "example": "2024-12-23T21:33:39.000000Z"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "format": "date-time",
+                                                                                "example": "2024-12-23T21:33:39.000000Z"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "winner": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 28
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "Victoria Azarenka"
+                                                                            },
+                                                                            "skill_level": {
+                                                                                "type": "integer",
+                                                                                "example": 91
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "string",
+                                                                                "example": "Femenino"
+                                                                            },
+                                                                            "reaction_time": {
+                                                                                "type": "integer",
+                                                                                "example": 88
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "score_a": {
+                                                                    "type": "integer",
+                                                                    "example": 177
+                                                                },
+                                                                "score_b": {
+                                                                    "type": "integer",
+                                                                    "example": 183
+                                                                },
+                                                                "round": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:41.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2024-12-23T21:33:41.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Solicitud incorrecta.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Debe proporcionar al menos un parámetro de búsqueda."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron torneos.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontraron torneos con los criterios proporcionados."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tournaments",
+            "description": "Tournaments"
+        }
+    ]
+}

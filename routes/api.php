@@ -1,4 +1,14 @@
 <?php
+/**
+ * @OA\Info(
+ *     title="Documentación de la API de Torneos",
+ *     version="1.0.0",
+ *     description="Esta es la documentación de la API para la gestión de torneos.",
+ *     @OA\Contact(
+ *         email="soporte@example.com"
+ *     )
+ * )
+ */
 
 use App\Http\Controllers\TournamentController;
 use Illuminate\Http\Request;
