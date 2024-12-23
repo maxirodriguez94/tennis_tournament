@@ -2,20 +2,32 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: laravel_app
-    volumes:
-      - ./tennis_tournament:/var/www/html
-      - ./tennis_tournament/database/database.sqlite:/var/www/html/database/database.sqlite
-    ports:
-      - 8000:8000
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - APP_KEY=base64:key
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/database/database.sqlite
+    image: php:7.4-fpm
+    container_name: tennis_app
     working_dir: /var/www/html
-    command: php artisan serve --host=0.0.0.0 --port=8000
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - "8000:8000"
+    networks:
+      - laravel
+
+  artisan:
+    image: composer
+    container_name: tennis_artisan
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: ["composer", "install"]
+
+  node:
+    image: node:18
+    container_name: tennis_node
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: ["npm", "install"]
+
+networks:
+  laravel:
