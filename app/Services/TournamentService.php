@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Simulators\ManTournamentSimulator;
 use App\Simulators\WomanTournamentSimulator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 
 class TournamentService
 {
@@ -192,13 +193,19 @@ private function formatMatchResults(array $matches): array
         }
     
         if (!empty($filters['startDate']) && !empty($filters['endDate'])) {
-            $query->whereBetween('created_at', [$filters['startDate'], $filters['endDate']]);
+            $startDate = Carbon::parse($filters['startDate'])->startOfDay();
+            $endDate = Carbon::parse($filters['endDate'])->endOfDay();
+    
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         } elseif (!empty($filters['startDate'])) {
-            $query->where('created_at', '>=', $filters['startDate']);
+            $startDate = Carbon::parse($filters['startDate'])->startOfDay();
+            $query->where('created_at', '>=', $startDate);
         } elseif (!empty($filters['endDate'])) {
-            $query->where('created_at', '<=', $filters['endDate']);
+            $endDate = Carbon::parse($filters['endDate'])->endOfDay();
+            $query->where('created_at', '<=', $endDate);
         }
     }
+    
     
     private function findTournamentById(int $tournamentId): ?Tournament
     {

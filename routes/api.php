@@ -19,3 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::prefix('tournaments')->group(function () {
+    Route::post('/simulate', [TournamentController::class, 'simulateTournament'])->name('tournaments.simulate');
+    Route::get('/with-matches', [TournamentController::class, 'getTournamentWithMatches'])->name('tournaments.with.matches');
+});
