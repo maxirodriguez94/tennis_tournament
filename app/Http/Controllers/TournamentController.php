@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Match;
-use App\Models\Player;
-use App\Models\Tournament;
 use App\Services\TournamentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
-use Carbon\Carbon;
 
 class TournamentController extends Controller
 {
@@ -28,44 +24,12 @@ class TournamentController extends Controller
             'players' => 'required|integer|min:8',
         ]);
 
-        $gender = $validated['gender'];
-        $type = $validated['type'];
-        $numPlayers = $validated['players'];
-
-        $players = Player::where('gender', $gender)->take($numPlayers)->get();
-
-        if ($players->count() < 8) {
-            return response()->json([
-                'error' => 'No hay suficientes jugadores para simular el torneo.'
-            ], 400);
-        }
-
-        $tournament = Tournament::create([
-            'name' => 'Tournament ' . now()->format('Y-m-d H:i:s'),
-            'is_doubles' => $type === 'doubles',
-            'gender' => $gender,
-        ]);
-
-        $isDoubles = $type === 'doubles';
-
         try {
-            $result = $this->tournamentService->simulateTournament($players, $isDoubles, $gender, $tournament);
-
-            $matchResults = collect($result['match_results'])->map(function ($match) {
-                return [
-                    'id' => $match['id'] ?? 'Desconocido',
-                    'team_a' => $match['team_a'] ?? 'Desconocido',
-                    'team_b' => $match['team_b'] ?? 'Desconocido',
-                    'winner' => $match['winner'] ?? 'Desconocido',
-                    'score_a' => $match['score_a'] ?? 0,
-                    'score_b' => $match['score_b'] ?? 0,
-                    'round' => $match['round']
-                ];
-            });
+            $result = $this->tournamentService->simulateTournament($validated);
 
             return response()->json([
                 'winner' => $result['winner'],
-                'match_results' => $matchResults,
+                'match_results' => $result['match_results'],
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -75,22 +39,22 @@ class TournamentController extends Controller
         }
     }
     
-    
     public function getTournamentWithMatches(Request $request): JsonResponse
-{
+    {
     $validated = $request->validate([
-        'tournament_id' => 'nullable|integer|exists:tournaments,id',
+        'tournament_id' => 'nullable|string|regex:/^\d+$/',
         'gender' => 'nullable|string|in:Masculino,Femenino',
         'startDate' => 'nullable|date',
         'endDate' => 'nullable|date',
     ]);
 
-
+  
     $tournamentId = $validated['tournament_id'] ?? null;
     $gender = $validated['gender'] ?? null;
     $startDate = $validated['startDate'] ?? null;
     $endDate = $validated['endDate'] ?? null;
 
+  
     if ($tournamentId && ($gender || $startDate || $endDate)) {
         return response()->json([
             'error' => 'Si se proporciona el ID del torneo, no se pueden incluir otros parámetros de búsqueda.'
@@ -102,26 +66,13 @@ class TournamentController extends Controller
             'error' => 'Debe proporcionar al menos un parámetro de búsqueda.'
         ], 400);
     }
-
-    if ($tournamentId) {
-        return $this->getTournamentById($tournamentId);
-    }
-
-    $query = Tournament::query();
-
-    if ($gender) {
-        $query->where('gender', $gender);
-    }
-
-    if ($startDate && $endDate) {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    } elseif ($endDate) {
-        $query->where('created_at', '<=', $endDate);
-    }
-
-    $tournaments = $query->with('matches')->get();
+    Log::info("ID request", ['tournament_id' => $tournamentId]);
+    $tournaments = $this->tournamentService->getTournamentWithMatches([
+        'tournament_id' => $tournamentId,
+        'gender' => $gender,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+    ]);
 
     if ($tournaments->isEmpty()) {
         return response()->json([
@@ -129,42 +80,10 @@ class TournamentController extends Controller
         ], 404);
     }
 
-    $transformedTournaments = $tournaments->map(function ($tournament) {
-        $tournament->matches = $tournament->matches->map(function ($match) {
-            $match->team_a = json_decode($match->team_a, true);
-            $match->team_b = json_decode($match->team_b, true);
-            $match->winner = json_decode($match->winner, true);
-            return $match;
-        });
-        return $tournament;
-    });
-
     return response()->json([
         'status' => 'success',
         'message' => 'Torneos encontrados.',
-        'data' => $transformedTournaments,
+        'data' => $tournaments,
     ], 200);
-}
-
-    public function getTournamentById(int $tournamentId): JsonResponse
-    {
-        $tournament = Tournament::with('matches')->find($tournamentId);
-    
-        if (!$tournament) {
-            return response()->json(['error' => 'Torneo no encontrado.'], 404);
-        }
-    
-        $tournament->matches = $tournament->matches->map(function ($match) {
-            $match->team_a = json_decode($match->team_a, true);
-            $match->team_b = json_decode($match->team_b, true);
-            $match->winner = json_decode($match->winner, true);
-            return $match;
-        });
-    
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Torneo encontrado.',
-            'data' => $tournament,
-        ], 200);
     }
-}    
+}
