@@ -23,4 +23,9 @@ class Match extends Model
         'team_a' => 'array', 
         'team_b' => 'array', 
     ];
+    public function tournament()
+    {
+        return $this->belongsTo(Tournament::class);
+    }
+
 }

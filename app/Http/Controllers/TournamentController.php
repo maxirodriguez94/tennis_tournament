@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Match;
 use App\Models\Player;
 use App\Models\Tournament;
 use App\Services\TournamentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
+use Carbon\Carbon;
 
 class TournamentController extends Controller
 {
@@ -72,41 +74,97 @@ class TournamentController extends Controller
             ], 500);
         }
     }
-
-    public function getTournamentWithMatches(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'tournament_id' => 'required|integer|exists:tournaments,id',
-        ]);
     
-        $tournament = Tournament::with('matches')->find(59);
+    
+    public function getTournamentWithMatches(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'tournament_id' => 'nullable|integer|exists:tournaments,id',
+        'gender' => 'nullable|string|in:Masculino,Femenino',
+        'startDate' => 'nullable|date',
+        'endDate' => 'nullable|date',
+    ]);
+
+
+    $tournamentId = $validated['tournament_id'] ?? null;
+    $gender = $validated['gender'] ?? null;
+    $startDate = $validated['startDate'] ?? null;
+    $endDate = $validated['endDate'] ?? null;
+
+    if ($tournamentId && ($gender || $startDate || $endDate)) {
+        return response()->json([
+            'error' => 'Si se proporciona el ID del torneo, no se pueden incluir otros parámetros de búsqueda.'
+        ], 400);
+    }
+
+    if (!$tournamentId && !$gender && !$startDate && !$endDate) {
+        return response()->json([
+            'error' => 'Debe proporcionar al menos un parámetro de búsqueda.'
+        ], 400);
+    }
+
+    if ($tournamentId) {
+        return $this->getTournamentById($tournamentId);
+    }
+
+    $query = Tournament::query();
+
+    if ($gender) {
+        $query->where('gender', $gender);
+    }
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->where('created_at', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->where('created_at', '<=', $endDate);
+    }
+
+    $tournaments = $query->with('matches')->get();
+
+    if ($tournaments->isEmpty()) {
+        return response()->json([
+            'message' => 'No se encontraron torneos con los criterios proporcionados.'
+        ], 404);
+    }
+
+    $transformedTournaments = $tournaments->map(function ($tournament) {
+        $tournament->matches = $tournament->matches->map(function ($match) {
+            $match->team_a = json_decode($match->team_a, true);
+            $match->team_b = json_decode($match->team_b, true);
+            $match->winner = json_decode($match->winner, true);
+            return $match;
+        });
+        return $tournament;
+    });
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Torneos encontrados.',
+        'data' => $transformedTournaments,
+    ], 200);
+}
+
+    public function getTournamentById(int $tournamentId): JsonResponse
+    {
+        $tournament = Tournament::with('matches')->find($tournamentId);
     
         if (!$tournament) {
-            return response()->json([
-                'error' => 'Torneo no encontrado.',
-            ], 404);
+            return response()->json(['error' => 'Torneo no encontrado.'], 404);
         }
-
-        Log::info('Partidos encontrados:', ['count' => $tournament->matches->count()]);
     
-        $formattedMatches = $tournament->matches->map(function ($match) {
-            return [
-                'id' => $match->id,
-                'team_a' => json_decode($match->team_a, true),
-                'team_b' => json_decode($match->team_b, true),
-                'winner' => json_decode($match->winner, true),
-                'score_a' => $match->score_a,
-                'score_b' => $match->score_b,
-                'created_at' => $match->created_at,
-                'updated_at' => $match->updated_at,
-            ];
+        $tournament->matches = $tournament->matches->map(function ($match) {
+            $match->team_a = json_decode($match->team_a, true);
+            $match->team_b = json_decode($match->team_b, true);
+            $match->winner = json_decode($match->winner, true);
+            return $match;
         });
     
         return response()->json([
-            'tournament_name' => $tournament->name,
-            'tournament_gender' => $tournament->gender,
-            'is_doubles' => $tournament->is_doubles,
-            'matches' => $formattedMatches,
-        ]);
+            'status' => 'success',
+            'message' => 'Torneo encontrado.',
+            'data' => $tournament,
+        ], 200);
     }
 }    

@@ -8,4 +8,4 @@ use App\Http\Controllers\TournamentController;
 
 Route::get('/simulate-tournament', [TournamentController::class, 'simulateTournament']);
 
-Route::get('/matches', [TournamentController::class, 'getTournamentWithMatches']);
+Route::get('/tournaments-with-matches', [TournamentController::class, 'getTournamentWithMatches'])->name('tournaments.with.matches');
