@@ -29,6 +29,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/', function () {
+    return response()->json([
+        'message' => 'Bienvenido al servidor Tennis Tournament'
+    ]);
+})->name('welcome');
+
 Route::prefix('tournaments')->group(function () {
     Route::post('/simulate', [TournamentController::class, 'simulateTournament'])->name('tournaments.simulate');
     Route::get('/with-matches', [TournamentController::class, 'getTournamentWithMatches'])->name('tournaments.with.matches');
