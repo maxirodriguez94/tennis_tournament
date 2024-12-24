@@ -39,7 +39,25 @@ Asegúrate de ajustar los valores si es necesario. Para este proyecto, SQLite ya
 
 ---
 
-### 3. Construir y levantar los contenedores Docker
+### 3. Instalar dependencias con Composer
+
+Accede al contenedor principal de la aplicación y ejecuta el siguiente comando para instalar las dependencias:
+
+1. Accede al contenedor:
+
+    ```bash
+    docker exec -it tennis_app bash
+    ```
+
+2. Instala las dependencias con Composer:
+
+    ```bash
+    composer install
+    ```
+
+---
+
+### 4. Construir y levantar los contenedores Docker
 
 Ejecuta los siguientes comandos para construir y levantar los contenedores de Docker:
 
@@ -52,30 +70,39 @@ Esto iniciará los servicios necesarios, incluyendo el servidor PHP.
 
 ---
 
-### 4. Ejecutar migraciones y seeders
+### 5. Configurar la base de datos
 
-Accede al contenedor principal y ejecuta las migraciones y seeders para configurar la base de datos:
-
-1. Accede al contenedor:
+1. Crea el archivo `database.sqlite` en la carpeta `database`:
 
     ```bash
-    docker exec -it tennis_app bash
+    touch database/database.sqlite
     ```
 
-2. Ejecuta las migraciones:
+2. Verifica los permisos del archivo:
+
+    ```bash
+    chmod 664 database/database.sqlite
+    ```
+
+---
+
+### 6. Ejecutar migraciones y seeders
+
+1. Ejecuta las migraciones:
 
     ```bash
     php artisan migrate
     ```
 
-3. Ejecuta los seeders:
+2. Ejecuta los seeders para poblar la base de datos con los jugadores iniciales:
+
     ```bash
     php artisan db:seed --class=PlayerSeeder
     ```
 
 ---
 
-### 5. Levantar el servidor de desarrollo
+### 7. Levantar el servidor de desarrollo
 
 Desde el contenedor, inicia el servidor de desarrollo Laravel:
 
@@ -83,7 +110,7 @@ Desde el contenedor, inicia el servidor de desarrollo Laravel:
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-Tu aplicación estará disponible en [http://localhost:8000](http://localhost:8000).
+Tu aplicación estará disponible en [http://localhost:8000/api/](http://localhost:8000/api/).
 
 ---
 
@@ -134,6 +161,7 @@ Tu aplicación estará disponible en [http://localhost:8000](http://localhost:80
 
 ---
 
-Contribución
+## Contribución
 
-Si deseas contribuir al proyecto o tienes alguna duda, contacta al equipo de desarrollo.
+Si deseas contribuir al proyecto o tienes alguna duda, contacta al equipo de desarrollo. La aplicación está disponible en producción en: [http://54.193.214.161:8000/api](http://54.193.214.161:8000/api).
+
