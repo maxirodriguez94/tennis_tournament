@@ -6,9 +6,9 @@ Este es un proyecto Laravel diseñado para simular torneos de tenis. Incluye jug
 
 Asegúrate de tener instalados los siguientes requisitos previos antes de comenzar:
 
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
-- Git
+-   [Docker](https://www.docker.com/)
+-   [Docker Compose](https://docs.docker.com/compose/)
+-   Git
 
 ---
 
@@ -57,19 +57,21 @@ Esto iniciará los servicios necesarios, incluyendo el servidor PHP.
 Accede al contenedor principal y ejecuta las migraciones y seeders para configurar la base de datos:
 
 1. Accede al contenedor:
-   ```bash
-   docker exec -it tennis_app bash
-   ```
+
+    ```bash
+    docker exec -it tennis_app bash
+    ```
 
 2. Ejecuta las migraciones:
-   ```bash
-   php artisan migrate
-   ```
+
+    ```bash
+    php artisan migrate
+    ```
 
 3. Ejecuta los seeders:
-   ```bash
-   php artisan db:seed --class=PlayerSeeder
-   ```
+    ```bash
+    php artisan db:seed --class=PlayerSeeder
+    ```
 
 ---
 
@@ -90,46 +92,48 @@ Tu aplicación estará disponible en [http://localhost:8000](http://localhost:80
 ### API Endpoints
 
 1. **Simular torneo**:
-   - **Ruta:** `POST /api/tournaments/simulate`
-   - **Cuerpo (JSON):**
-     ```json
-     {
-       "gender": "Femenino",
-       "type": "doubles",
-       "players": 8
-     }
-     ```
+
+    - **Ruta:** `POST /api/tournaments/simulate`
+    - **Cuerpo (JSON):**
+        ```json
+        {
+            "gender": "Femenino",
+            "type": "doubles",
+            "players": 8
+        }
+        ```
 
 2. **Obtener torneos con partidos**:
-   - **Ruta:** `GET /api/tournaments/with-matches`
-   - **Parámetros opcionales:**
-     - `gender`
-     - `tournament_id`
-     - `startDate`
-     - `endDate`
+    - **Ruta:** `GET /api/tournaments/with-matches`
+    - **Parámetros opcionales:**
+        - `gender`
+        - `tournament_id`
+        - `startDate`
+        - `endDate`
 
 ---
 
 ## Comandos útiles
 
-- Apagar los contenedores:
-  ```bash
-  docker-compose down
-  ```
+-   Apagar los contenedores:
 
-- Reconstruir el entorno:
-  ```bash
-  docker-compose up --build -d
-  ```
+    ```bash
+    docker-compose down
+    ```
 
-- Acceder al contenedor principal:
-  ```bash
-  docker exec -it tennis_app bash
-  ```
+-   Reconstruir el entorno:
+
+    ```bash
+    docker-compose up --build -d
+    ```
+
+-   Acceder al contenedor principal:
+    ```bash
+    docker exec -it tennis_app bash
+    ```
 
 ---
 
 Contribución
 
 Si deseas contribuir al proyecto o tienes alguna duda, contacta al equipo de desarrollo.
-

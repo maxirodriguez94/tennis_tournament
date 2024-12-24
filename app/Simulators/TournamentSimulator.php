@@ -2,49 +2,45 @@
 
 namespace App\Simulators;
 
-class TournamentSimulator
-{
+class TournamentSimulator {
     protected $players;
     protected $isDoubles;
     protected $round;
 
-    public function __construct($players, $isDoubles = false, $round = 1)
-    {
+    public function __construct( $players, $isDoubles = false, $round = 1 ) {
         $this->players = $players;
         $this->isDoubles = $isDoubles;
         $this->round = $round;
     }
 
-    protected function advanceRound()
-    {
-        $this->round++; 
+    protected function advanceRound() {
+        $this->round++;
+
     }
 
-    protected function prepareTeams()
-    {
+    protected function prepareTeams() {
         $playersArray = $this->players->toArray();
-        shuffle($playersArray);
+        shuffle( $playersArray );
 
-        if ($this->isDoubles) {
-            if (count($playersArray) % 4 !== 0) {
-                throw new \Exception("El número de jugadores debe ser múltiplo de 4 para dobles.");
+        if ( $this->isDoubles ) {
+            if ( count( $playersArray ) % 4 !== 0 ) {
+                throw new \Exception( 'El número de jugadores debe ser múltiplo de 4 para dobles.' );
             }
-            return array_chunk($playersArray, 2); 
+            return array_chunk( $playersArray, 2 );
+
         }
 
-        if (count($playersArray) % 2 !== 0) {
-            throw new \Exception("El número de jugadores debe ser par para individuales.");
+        if ( count( $playersArray ) % 2 !== 0 ) {
+            throw new \Exception( 'El número de jugadores debe ser par para individuales.' );
         }
-        return $playersArray; 
+        return $playersArray;
+
     }
 
-    
-
-    protected function simulateMatch($teamA, $teamB, $isDoubles)
-    {
-        $scoreA = $this->calculateTeamScore($teamA,$isDoubles);
-        $scoreB = $this->calculateTeamScore($teamB,$isDoubles);
-        $winner = $this->determineWinner($scoreA, $scoreB, $teamA, $teamB);
+    protected function simulateMatch( $teamA, $teamB, $isDoubles ) {
+        $scoreA = $this->calculateTeamScore( $teamA, $isDoubles );
+        $scoreB = $this->calculateTeamScore( $teamB, $isDoubles );
+        $winner = $this->determineWinner( $scoreA, $scoreB, $teamA, $teamB );
 
         return [
             'id' => uniqid(),
@@ -56,36 +52,34 @@ class TournamentSimulator
         ];
     }
 
-    protected function calculateTeamScore($team, $isDoubles)
-    {
-        return 0; 
+    protected function calculateTeamScore( $team, $isDoubles ) {
+        return 0;
+
     }
 
-    public function determineWinner($scoreA, $scoreB, $teamA, $teamB)
-    {
-        if ($scoreA === $scoreB) {
-            return rand(0, 1) === 0 ? $teamA : $teamB;
+    public function determineWinner( $scoreA, $scoreB, $teamA, $teamB ) {
+        if ( $scoreA === $scoreB ) {
+            return rand( 0, 1 ) === 0 ? $teamA : $teamB;
         }
 
         return $scoreA > $scoreB ? $teamA : $teamB;
     }
 
-
-    protected function getPlayerNames($team)
-    {
-        if (isset($team['name'])) {
-            return [$team['name']];
+    protected function getPlayerNames( $team ) {
+        if ( isset( $team[ 'name' ] ) ) {
+            return [ $team[ 'name' ] ];
         }
 
-        if (is_array($team) && array_keys($team) === range(0, count($team) - 1)) {
-            return array_map(function ($player) {
-                return $player['name'] ?? 'Desconocido';
-            }, $team);
+        if ( is_array( $team ) && array_keys( $team ) === range( 0, count( $team ) - 1 ) ) {
+            return array_map( function ( $player ) {
+                return $player[ 'name' ] ?? 'Desconocido';
+            }
+            , $team );
         }
-        if (is_object($team)) {
-            return [$team->name ?? 'Desconocido'];
+        if ( is_object( $team ) ) {
+            return [ $team->name ?? 'Desconocido' ];
         }
 
-        return ['Desconocido'];
+        return [ 'Desconocido' ];
     }
 }

@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Match extends Model
-{
+class Match extends Model {
     use HasFactory;
 
     protected $fillable = [
@@ -20,12 +19,12 @@ class Match extends Model
     ];
 
     protected $casts = [
-        'team_a' => 'array', 
-        'team_b' => 'array', 
+        'team_a' => 'array',
+        'team_b' => 'array',
     ];
-    public function tournament()
-    {
-        return $this->belongsTo(Tournament::class);
+
+    public function tournament() {
+        return $this->belongsTo( Tournament::class );
     }
 
 }
