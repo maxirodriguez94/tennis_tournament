@@ -114,6 +114,34 @@ Tu aplicación estará disponible en [http://localhost:8000/api/](http://localho
 
 ---
 
+### 8. Documentación de la API
+
+El proyecto incluye una documentación de la API generada con Swagger. Para acceder a ella, sigue estos pasos:
+
+1. Instala la biblioteca de Swagger:
+
+    ```bash
+    composer require "darkaonline/l5-swagger"
+    ```
+
+2. Publica los archivos de configuración:
+
+    ```bash
+    php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+    ```
+
+3. Genera la documentación:
+
+    ```bash
+    php artisan l5-swagger:generate
+    ```
+
+4. Accede a la documentación en:
+
+    [http://localhost:8000/api/documentation](http://localhost:8000/api/documentation)
+
+---
+
 ## Uso
 
 ### API Endpoints
